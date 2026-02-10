@@ -1,139 +1,209 @@
 body {
-    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-image: url("heart-bg.jpg");
-    font-family: "Pixelify Sans", sans-serif;
-}
-
-/* Envelope Screen */
-#envelope-container {
-    text-align: center;
-    cursor:pointer;
-}
-
-@keyframes pulse {
-    0% {
-        transform:scale(1);
-    }
-    50% {
-        transform: scale(1.1);
-    }
-    100% {
-        transform: scale(1);
-    }
-}
-
-#envelope{
-    width: 200px;
-    animation: pulse 1.5s infinite;
-    cursor: pointer;
-}
-
-#letter-container{
-    display: none;
-    position:fixed;
-    inset: 0;
-    justify-content: center;
-    align-items: center;
-}
-
-.letter-window{
-    width: 90vw;
-    max-width: 800px;
-    aspect-ratio: 3/2;
-    padding: 20px 20px 0 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    background-image: url("window.png");
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    border-radius: 12px;
-    gap: 1px;
-    padding-top: 180px;
-
-    transform: scale(1.2);
-    opacity: 0;
-    transition: transform 0.6s ease, opacity 0.6s ease;
-}
-
-.letter-window.open {
-    transform: scale(1);
-    opacity: 1;
-}
-
-h1 {
-    font-size: 30px;
-    margin:0;
-}
-
-p {
-    font-size: 40px;
-}
-
-/* Cat */
-
-.cat {
-    width: 250px;
-    margin: 10px 0;
-    transition: width 0.4s ease;
-}
-
-.letter-window.final .cat {
-    width: 180px;
-}
-
-/* buttons */
-.buttons {
-    display: flex;
-    justify-content: center;
-    gap: 30px;
+    background-color: #ffe6e6; /* Soft pink background */
+    font-family: 'Pacifico', cursive;
+    margin: 0;
+    overflow: hidden;
     position: relative;
 }
 
-.no-wrapper{
-    position:relative;
-}
-
-.btn {
-    width: 120px;
-    cursor: pointer;
-    user-select: none;
-}
-
-.yes-btn,
-.no-btn {
-width: 120px;
-height: auto;
-display: inline-block;
-}
-
-.yes-btn {
+.container {
+    text-align: center;
     position: relative;
-    z-index: 2;
-    transform-origin: center center;
+    z-index: 10;
+}
+
+/* --- Envelope Styles --- */
+.envelope-wrapper {
+    cursor: pointer;
+    animation: bounce 2s infinite ease-in-out;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.envelope {
+    position: relative;
+    width: 300px;
+    height: 200px;
+    background-color: #ff3366; /* Back of the envelope */
+    margin: 0 auto;
+    border-radius: 5px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    /* Ensure child elements are positioned relative to this */
+}
+
+/* Flap (Top triangle) */
+.flap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    border-left: 150px solid transparent;
+    border-right: 150px solid transparent; /* 300px width total */
+    border-top: 110px solid #ff80ab; /* Flap color */
+    transform-origin: top;
+    transition: transform 0.6s, z-index 0.2s; 
+    z-index: 4; /* On top when closed */
+}
+
+.envelope.open .flap {
+    transform: rotateX(180deg);
+    z-index: 0; /* Behind everything when open */
+    border-top-color: #ff99bb; /* Slightly darker when open/backside */
+}
+
+/* Pocket (The front body of the envelope) */
+.body {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    border-left: 150px solid #ff4d79; /* Left slope */
+    border-right: 150px solid #ff4d79; /* Right slope */
+    border-bottom: 100px solid #ff1a53; /* Bottom triangle height */
+    border-top: 100px solid transparent; /* Keeps the shape correct */
+    z-index: 3; /* Always in front of the letter initially */
+    border-radius: 0 0 5px 5px;
+}
+
+/* Letter inside */
+.letter {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 260px;
+    height: 180px;
+    background-color: white;
+    border-radius: 5px;
+    z-index: 2; /* Between back and pocket */
+    transition: transform 0.8s ease-in-out, z-index 0.1s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.letter .text {
+    font-family: 'Dancing Script', cursive;
+    font-size: 28px;
+    color: #ff3366;
+    font-weight: bold;
+}
+
+/* Animation State */
+.envelope.open .letter {
+    transform: translateX(-50%) translateY(-60px); /* Slide up */
+    z-index: 5; /* Pop out on top of pocket */
+    transition-delay: 0.4s; /* Wait for flap to open */
+}
+
+/* Hover effects for envelope */
+.envelope-wrapper:hover .envelope {
+    transform: scale(1.02);
     transition: transform 0.3s ease;
 }
 
-.no-btn {
-    z-index: 1;
-    position: relative;
-    transition: transform 0.15s ease;
-    cursor: default;
+
+/* --- Question & Success Container --- */
+.hidden {
+    display: none;
+    opacity: 0;
+    transition: opacity 1s ease;
 }
 
-.final-text{
-    font-size: 22px;
-    line-height: 1.4;
-    text-align: center;
-    display: inline-block;
-    padding: 10px 20px;
-    background-color: rgba(255,240,240,0.5);
-    border-radius: 12px;
+.visible {
+    display: block;
+    animation: fadeIn 1s forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+h1 {
+    color: #ff3366;
+    font-size: 3rem;
+    margin-bottom: 30px;
+    text-shadow: 2px 2px 4px rgba(255, 100, 100, 0.2);
+}
+
+.buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+    position: relative; /* For absolute positioning of 'No' button */
+    height: 100px; /* Define height to contain buttons */
+    width: 400px;
+    margin: 0 auto;
+}
+
+button {
+    padding: 15px 30px;
+    font-size: 1.5rem;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    font-family: 'Pacifico', cursive;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+#yes-btn {
+    background-color: #4CAF50; /* Green for Yes */
+    color: white;
+}
+
+#yes-btn:hover {
+    background-color: #45a049;
+    transform: scale(1.1);
+}
+
+#no-btn {
+    background-color: #f44336; /* Red for No */
+    color: white;
+    position: absolute; /* Allows it to move freely */
+}
+
+/* Success Message Styling */
+#success-container p {
+    font-size: 2rem;
+    color: #d32f2f;
+}
+
+/* Floating Hearts Background (Optional flare) */
+.hearts {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
+}
+
+.heart {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: #ff66b2;
+    opacity: 0.7;
+    animation: float 5s infinite ease-in;
+    bottom: -20px;
+}
+
+@keyframes float {
+    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
 }

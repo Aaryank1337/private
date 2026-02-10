@@ -1,72 +1,74 @@
-// Elements
-const envelope = document.getElementById("envelope-container");
-const letter = document.getElementById("letter-container");
-const noBtn = document.querySelector(".no-btn");
-const yesBtn = document.querySelector(".btn[alt='Yes']");
+document.addEventListener('DOMContentLoaded', () => {
+    const envelopeContainer = document.getElementById('envelope-container');
+    const envelope = document.querySelector('.envelope');
+    const questionContainer = document.getElementById('question-container');
+    const successContainer = document.getElementById('success-container');
+    const yesBtn = document.getElementById('yes-btn');
+    const noBtn = document.getElementById('no-btn');
 
-const title = document.getElementById("letter-title");
-const catImg = document.getElementById("letter-cat");
-const buttons = document.getElementById("letter-buttons");
-const finalText = document.getElementById("final-text");
+    let yesBtnScale = 1;
 
-// Click Envelope
+    // 1. Envelope Interaction
+    envelopeContainer.addEventListener('click', () => {
+        envelope.classList.add('open');
+        
+        // Wait for animation to finish before showing the question
+        setTimeout(() => {
+            envelopeContainer.style.display = 'none';
+            questionContainer.classList.remove('hidden');
+            questionContainer.classList.add('visible');
+        }, 1500); // Adjust based on CSS transition time
+    });
 
-envelope.addEventListener("click", () => {
-    envelope.style.display = "none";
-    letter.style.display = "flex";
+    // 2. No Button Interaction (Moves away)
+    const moveNoButton = () => {
+        const btnWidth = noBtn.offsetWidth;
+        const btnHeight = noBtn.offsetHeight;
+        
+        // Calculate max allowed positions (viewport size - button size - padding)
+        const padding = 20;
+        const maxX = window.innerWidth - btnWidth - padding;
+        const maxY = window.innerHeight - btnHeight - padding;
 
-    setTimeout( () => {
-        document.querySelector(".letter-window").classList.add("open");
-    },50);
-});
+        const randomX = Math.random() * (maxX - padding) + padding;
+        const randomY = Math.random() * (maxY - padding) + padding;
 
-// Logic to move the NO btn
+        noBtn.style.position = 'fixed'; // Break out of flow completely
+        noBtn.style.left = `${randomX}px`;
+        noBtn.style.top = `${randomY}px`;
 
-noBtn.addEventListener("mouseover", () => {
-    const min = 200;
-    const max = 200;
+        // Make Yes button grow
+        yesBtnScale += 0.2;
+        yesBtn.style.transform = `scale(${yesBtnScale})`;
+    };
 
-    const distance = Math.random() * (max - min) + min;
-    const angle = Math.random() * Math.PI * 2;
+    noBtn.addEventListener('mouseover', moveNoButton);
+    noBtn.addEventListener('click', moveNoButton); // In case they manage to click it on mobile
 
-    const moveX = Math.cos(angle) * distance;
-    const moveY = Math.sin(angle) * distance;
+    // 3. Yes Button Interaction
+    yesBtn.addEventListener('click', () => {
+        questionContainer.style.display = 'none';
+        successContainer.classList.remove('hidden');
+        successContainer.classList.add('visible');
 
-    noBtn.style.transition = "transform 0.3s ease";
-    noBtn.style.transform = `translate(${moveX}px, ${moveY}px)`;
-});
+        // Trigger confetti or hearts
+        createHearts();
+    });
 
-// Logic to make YES btn to grow
-
-// let yesScale = 1;
-
-// yesBtn.style.position = "relative"
-// yesBtn.style.transformOrigin = "center center";
-// yesBtn.style.transition = "transform 0.3s ease";
-
-// noBtn.addEventListener("click", () => {
-//     yesScale += 2;
-
-//     if (yesBtn.style.position !== "fixed") {
-//         yesBtn.style.position = "fixed";
-//         yesBtn.style.top = "50%";
-//         yesBtn.style.left = "50%";
-//         yesBtn.style.transform = `translate(-50%, -50%) scale(${yesScale})`;
-//     }else{
-//         yesBtn.style.transform = `translate(-50%, -50%) scale(${yesScale})`;
-//     }
-// });
-
-// YES is clicked
-
-yesBtn.addEventListener("click", () => {
-    title.textContent = "Yippeeee!";
-
-    catImg.src = "cat_dance.gif";
-
-    document.querySelector(".letter-window").classList.add("final");
-
-    buttons.style.display = "none";
-
-    finalText.style.display = "block";
+    function createHearts() {
+        const heartsContainer = document.querySelector('.hearts');
+        for (let i = 0; i < 50; i++) {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = Math.random() * 3 + 2 + 's';
+            heart.style.opacity = Math.random();
+            heartsContainer.appendChild(heart);
+            
+            // Remove heart after animation
+            setTimeout(() => {
+                heart.remove();
+            }, 5000);
+        }
+    }
 });
